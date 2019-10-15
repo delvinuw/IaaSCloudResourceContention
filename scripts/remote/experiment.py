@@ -254,7 +254,7 @@ class Experiment(object):
             
             # time stamp that user percieved
             time1 = time.time()
-           
+            result = ""
             if (self.pahtntomIdle < 0): 
                 #phantomIdle default to -1 so run normal cascading experiments
                 result = os.popen(
