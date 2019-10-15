@@ -257,8 +257,7 @@ class Experiment(object):
             #@TODO:REFACTOR
             result = ''
             if(self.phantomIdle != -1): #phantom idle
-                time.sleep(self.phantomIdle)
-                continue 
+                time.sleep(10)#refactor
             else: #standard case
                 result = os.popen(
                     const.command[self.benchmark]+self.options[self.benchmark]).read()
@@ -266,11 +265,10 @@ class Experiment(object):
             time2 = time.time()
             duration = time2-time1  # unit in seconds
 
-            if(self.phantomIdle != -1):
-                myParser = parser(self.benchmark, result, testOption=self.options[self.benchmark],
-                                duration=duration, experimentID=self.experimentID)
-                func = myParser.getfunc()
-                func()
-                print(result)
-            else:
-                print(str(duration))
+            
+            myParser = parser(self.benchmark, result, testOption=self.options[self.benchmark],
+                            duration=duration, experimentID=self.experimentID)
+            func = myParser.getfunc()
+            func()
+            print(result)
+            
