@@ -239,23 +239,38 @@ class parser(object):
 
 
 class Experiment(object):
-    def __init__(self, benchmark, cycle, options, experimentID):
+    def __init__(self, benchmark, cycle, options, experimentID):#phantomIdle
         self.benchmark = benchmark
         self.cycle = int(cycle)
         self.options = options
         self.experimentID = experimentID
+        #self.phontomIdle = phantomIdle
 
     def run(self):
         for i in range(self.cycle):
             # flush cache
             os.popen("echo 3 | sudo tee /proc/sys/vm/drop_caches").read()
             print(const.command[self.benchmark]+self.options[self.benchmark])
+            
             # time stamp that user percieved
             time1 = time.time()
             result = os.popen(
-                const.command[self.benchmark]+self.options[self.benchmark]).read()
+                    const.command[self.benchmark]+self.options[self.benchmark]).read()
+            # if (self.pahtntomIdle < 0): 
+            #     #phantomIdle default to -1 so run normal cascading experiments
+            #     result = os.popen(
+            #         const.command[self.benchmark]+self.options[self.benchmark]).read()
+            # elif (i == 0): 
+            #     #run single vm and rest idle
+            #     result = os.popen(
+            #         const.command[self.benchmark]+self.options[self.benchmark]).read()
+            # else: 
+            #     #wait for phantomIdle seconds
+            #     time.sleep(self.phantomIdle)
+                
             time2 = time.time()
             duration = time2-time1  # unit in seconds
+            
             myParser = parser(self.benchmark, result, testOption=self.options[self.benchmark],
                               duration=duration, experimentID=self.experimentID)
             func = myParser.getfunc()

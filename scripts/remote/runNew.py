@@ -16,8 +16,9 @@ def main(argv):
     cycle = '10'
     stopVM = False
     benchmark = const.sysbench
+    phantomIdle = -1
     try:
-        opts, args = getopt.getopt(argv, "shc:i:t:")
+        opts, args = getopt.getopt(argv, "shcp:i:t:")
     except getopt.GetoptError:
         print('run.py -c <num of cycles> -i <exp_id> -t <exp_type>')
         sys.exit(2)
@@ -27,6 +28,8 @@ def main(argv):
 			 -i <ID should be unique by each time we run.py but shared amoung all instances>\n\
 			 -t benchmark')
             sys.exit()
+        elif opt in ("-p"):
+            phantomIdle = arg
         elif opt in ("-i"):
             ID = arg
         elif opt in ("-c"):
@@ -39,7 +42,7 @@ def main(argv):
     # do experiment HERE!!!
     # e1=Experiment(const.y_cruncher,cycle,supportedBenchmarks,ID)
     # e1.run()
-    e2 = Experiment(benchmark, cycle, const.supportedBenchmarks, ID)
+    e2 = Experiment(benchmark, cycle, const.supportedBenchmarks, ID)#phantomIdle
 
     if const.plugins is True:
         # On

@@ -19,24 +19,25 @@ def pssh(minute='*', hour='*', day='*', cycles='1', benchmark='pgbench'):
 	id=$(date -u +%s)
 	_task='''+"'"+minute+" "+hour+" "+day+''' * * ubuntu python3  ~/SCRIPT/scripts/remote/run.py -c '''+cycles+' -t '+benchmark+''' -i '$id
 	task=\\'$_task\\'
-	psshcommand='set -f && eval "$(ssh-agent -s)" && ssh-add -k ~/.ssh/git_capstone && rm -rf IaaSCloudResourceContention && git clone https://github.com/wlloyduw/IaaSCloudResourceContention.git && mv IaaSCloudResourceContention SCRIPT && cd ~/SCRIPT && cp /etc/crontab . && echo '$task' >> crontab && sudo mv crontab /etc/crontab && sudo chown root.root /etc/crontab && sudo service cron reload'
-	pssh -i -h hostfile_pssh -x "-o StrictHostKeyChecking=no -i ~/.ssh/as0.pem" $psshcommand
+	psshcommand='set -f && eval "$(ssh-agent -s)" && ssh-add -k ~/.ssh/git_capstone && rm -rf IaaSCloudResourceContention && git clone https://github.com/delvinuw/IaaSCloudResourceContention.git && mv IaaSCloudResourceContention SCRIPT && cd ~/SCRIPT && cp /etc/crontab . && echo '$task' >> crontab && sudo mv crontab /etc/crontab && sudo chown root.root /etc/crontab && sudo service cron reload'
+	pssh -i -h hostfile_pssh -x "-o StrictHostKeyChecking=no -i ~/.ssh/as0.pem" $psshcommand                                            
 	'''
     respond = os.popen(shellscript).read()
     print(respond)
 
 
-def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cycles='10', interval=15, benchmark='pgbench', reverseFlag=False, vmgen='c3', stopFlag=False):
+def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cycles='10', interval=15, benchmark='pgbench', reverseFlag=False, vmgen='c3', stopFlag=False, phantomMode=False, phantomIdle=-1):
     print("in pssh2")
     # override pssh when doing 1to16 dedicated host experiment
     # copy each 'crontab' to its instance
     os.system('cp crontab.bak crontab')
     exp_id = os.popen('date -u +%s').read()
 
-    def getPsshcommand(minute, hour, day, HOST_STRING, setid, stopVM):
+    #@TODO: add phantom flags here?
+    def getPsshcommand(minute, hour, day, HOST_STRING, setid, stopVM, pIdle):
         return '''
 		set -f
-		psshcommand='set -f && echo "''' + minute + " " + hour + " " + day + ''' * * ubuntu python3  ~/SCRIPT/scripts/remote/run.py -c ''' + cycles+' -t '+benchmark + stopVM + ' -i ' + str(exp_id).strip() + '-' + str(setid) + ' | logger -t testharness' + '''" >> crontab'
+		psshcommand='set -f && echo "''' + minute + " " + hour + " " + day + ''' * * ubuntu python3  ~/SCRIPT/scripts/remote/run.py -c ''' + cycles+' -t '+benchmark + stopVM + ' -i ' + str(exp_id).strip() + '-' + str(setid) + '-p ' + pIdle + ' | logger -t testharness' + '''" >> crontab'
 		pssh -i -H "''' + HOST_STRING + '''" -x "-o StrictHostKeyChecking=no -i ~/.ssh/as0.pem" $psshcommand
 		'''
 
@@ -84,15 +85,16 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
                     #schedule one VM to stop each time
                     print("stop vm:" + hostlist[i]) 
                     shell = getPsshcommand(str(target_time.minute), str(
-                        target_time.hour), str(target_time.day), hostlist[i], i, " -s")
+                        target_time.hour), str(target_time.day), hostlist[i], i, " -s", str(phantomIdle))
                     #print(shell)
                     #print(HOST_STRING)
                     tmp = os.popen(shell).read()
                     print(tmp)
                     skip=0
 
+#@TODO: whats this do?
         shell = getPsshcommand(str(target_time.minute), str(
-            target_time.hour), str(target_time.day), HOST_STRING, i, "")
+            target_time.hour), str(target_time.day), HOST_STRING, i, "", str(phantomIdle))
         #print(shell)
         #print(HOST_STRING)
         tmp = os.popen(shell).read()
@@ -153,7 +155,7 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
 def cloneGitRepo():
     shell = r'''
 	psshcommand='eval "$(ssh-agent -s)" && ssh-add -k ~/.ssh/git_capstone && rm -rf IaaSCloudResourceContention SCRIPT &&
-	git clone https://github.com/wlloyduw/IaaSCloudResourceContention.git && mv IaaSCloudResourceContention SCRIPT'
+	git clone https://github.com/delvinuw/IaaSCloudResourceContention.git && mv IaaSCloudResourceContention SCRIPT'
 
 	pssh -i -h hostfile_pssh -x "-o StrictHostKeyChecking=no -i ~/.ssh/as0.pem" $psshcommand
 	'''
@@ -175,6 +177,8 @@ def main(argv):
     notice = '''#distribute_work.py# 
 	-h : help
         -s stop instances after test (experimental, use before everything but -b)
+    -p : phantom vm mode, starts a single vm with benchmark running, where rest of vms run idle.
+         takes rest interval in seconds as arg.  
 	-r :dedicated host reverse_mode 1to16 (16to1 by default)
 	-b <choose a benchmark>
 	-t/c <minute:hour:day in UTC>/<minutes count down> 
@@ -186,7 +190,7 @@ def main(argv):
         print(notice)
         sys.exit()
     try:
-        opts, args = getopt.getopt(argv, "shrt:c:n:d:b:g:")
+        opts, args = getopt.getopt(argv, "shrtp:c:n:d:b:g:")
     except getopt.GetoptError:
         print(notice)
         sys.exit(2)
@@ -199,6 +203,8 @@ def main(argv):
     reverseFlag = False
     stopFlag = False
     vmgen = 'c3'
+    phantomMode = False
+    phantomIdle = -1
     # CLI input handler
     for opt, arg in opts:
         if opt in ("-b"):
@@ -218,6 +224,14 @@ def main(argv):
             print('stop VM flag has been included...')
             stopFlag = True
 
+        elif opt in ("-p"):
+            print('phantom mode active...')
+            phantomMode = True
+            if (int(arg) > 60 or int(arg) < 0):
+                print('phantom idle needs to be between 0 and 60 seconds')
+                sys.exit()
+            phantomIdle = arg
+
         elif opt in ("-t"):
             minute = arg.strip().split(':')[0]
             hour = arg.strip().split(':')[1]
@@ -228,7 +242,7 @@ def main(argv):
 
         elif opt in ("-c"):
             if int(arg) not in range(360):
-                print('count down need to be less than 360 min')
+                print('count down needs to be less than 360 min')
                 sys.exit()
             utc_datetime = datetime.datetime.utcnow()
             target_time = utc_datetime+relativedelta(minutes=int(arg))
@@ -238,13 +252,13 @@ def main(argv):
             cycles = arg
         elif opt in ('-g'):
             vmgen = arg
-        elif opt in ('-d'):
+        elif opt in ('-d'): # @TODO: maybe we can create a new loop for this...so it can be out of order 
             # dedicated host mode
             iterative_interval = int(arg)
             getPublicIpPool()
             cloneGitRepo()
             pssh_v2(target_time, cycles, iterative_interval,
-                    benchmark, reverseFlag, vmgen, stopFlag)
+                    benchmark, reverseFlag, vmgen, stopFlag, phantomMode, phantomIdle) #@TODO: add phantom flags
             sys.exit()
 
     getPublicIpPool()
