@@ -254,18 +254,19 @@ class Experiment(object):
             
             # time stamp that user percieved
             time1 = time.time()
-            result = ""
-            if (self.pahtntomIdle < 0): 
-                #phantomIdle default to -1 so run normal cascading experiments
-                result = os.popen(
+            result = os.popen(
                     const.command[self.benchmark]+self.options[self.benchmark]).read()
-            elif (i == 0): 
-                #run single vm and rest idle
-                result = os.popen(
-                    const.command[self.benchmark]+self.options[self.benchmark]).read()
-            else: 
-                #wait for phantomIdle seconds
-                time.sleep(self.phantomIdle)
+            # if (self.pahtntomIdle < 0): 
+            #     #phantomIdle default to -1 so run normal cascading experiments
+            #     result = os.popen(
+            #         const.command[self.benchmark]+self.options[self.benchmark]).read()
+            # elif (i == 0): 
+            #     #run single vm and rest idle
+            #     result = os.popen(
+            #         const.command[self.benchmark]+self.options[self.benchmark]).read()
+            # else: 
+            #     #wait for phantomIdle seconds
+            #     time.sleep(self.phantomIdle)
                 
             time2 = time.time()
             duration = time2-time1  # unit in seconds
