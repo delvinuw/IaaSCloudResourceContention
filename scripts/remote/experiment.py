@@ -256,8 +256,8 @@ class Experiment(object):
             
             #@TODO:REFACTOR
             result = ''
-            if(phantomIdle != -1): #phantom idle
-                time.sleep(phantomIdle)
+            if(self.phantomIdle != -1): #phantom idle
+                time.sleep(self.phantomIdle)
                 continue 
             else: #standard case
                 result = os.popen(
@@ -265,7 +265,7 @@ class Experiment(object):
             
             time2 = time.time()
             duration = time2-time1  # unit in seconds
-            if(phantomIdle == -1):
+            if(self.phantomIdle == -1):
                 myParser = parser(self.benchmark, result, testOption=self.options[self.benchmark],
                                 duration=duration, experimentID=self.experimentID)
                 func = myParser.getfunc()
