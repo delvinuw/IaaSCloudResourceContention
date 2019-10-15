@@ -97,7 +97,7 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
                     shell = getPsshcommand(str(target_time.minute), str(
                         target_time.hour), str(target_time.day), hostlist[i], i, " -s")
 
-                    if (i == 0 and phantomIdle >= 0):
+                    if (i != 0 and phantomIdle >= 0):
                         #phantom mode
                         shell = getPsshcommand(str(target_time.minute), str(
                             target_time.hour), str(target_time.day), hostlist[i], i, " -s", phantomIdle)
@@ -206,7 +206,7 @@ def main(argv):
         print(notice)
         sys.exit()
     try:
-        opts, args = getopt.getopt(argv, "sphrt:c:n:d:b:g:")
+        opts, args = getopt.getopt(argv, "shprt:c:n:d:b:g:")
     except getopt.GetoptError:
         print(notice)
         sys.exit(2)
@@ -240,7 +240,7 @@ def main(argv):
             stopFlag = True
 
         elif opt in ("-p"):
-            print(arg + 'phantom mode active...')
+            print('phantom mode active...')
             # if int(arg) not in range(0, 60):
             #     print('phantom idle needs to be between 0 and 60 seconds')
             #     sys.exit()

@@ -253,8 +253,14 @@ class Experiment(object):
             print(const.command[self.benchmark]+self.options[self.benchmark])
             # time stamp that user percieved
             time1 = time.time()
-            result = os.popen(
-                const.command[self.benchmark]+self.options[self.benchmark]).read()
+            
+            result = ''
+            if(phantomIdle != -1): #phantom idle
+                time.sleep(phantomIdle)
+            else: #standard case
+                result = os.popen(
+                    const.command[self.benchmark]+self.options[self.benchmark]).read()
+            
             time2 = time.time()
             duration = time2-time1  # unit in seconds
             myParser = parser(self.benchmark, result, testOption=self.options[self.benchmark],
