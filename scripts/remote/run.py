@@ -17,7 +17,7 @@ def main(argv):
     stopVM = False
     benchmark = const.sysbench
     try:
-        opts, args = getopt.getopt(argv, "shc:i:t:")
+        opts, args = getopt.getopt(argv, "shcp:i:t:")
     except getopt.GetoptError:
         print('run.py -c <num of cycles> -i <exp_id> -t <exp_type>')
         sys.exit(2)
