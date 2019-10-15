@@ -18,7 +18,7 @@ def main(argv):
     benchmark = const.sysbench
     phantomIdle = -1
     try:
-        opts, args = getopt.getopt(argv, "shc:i:t:")
+        opts, args = getopt.getopt(argv, "shcp:i:t:")
     except getopt.GetoptError:
         print('run.py -c <num of cycles> -i <exp_id> -t <exp_type>')
         sys.exit(2)
