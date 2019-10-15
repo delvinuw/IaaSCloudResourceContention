@@ -42,7 +42,7 @@ def main(argv):
     # do experiment HERE!!!
     # e1=Experiment(const.y_cruncher,cycle,supportedBenchmarks,ID)
     # e1.run()
-    e2 = Experiment(benchmark, cycle, const.supportedBenchmarks, ID, phantomIdle)
+    e2 = Experiment(benchmark, cycle, const.supportedBenchmarks, ID)#phantomIdle
 
     if const.plugins is True:
         # On

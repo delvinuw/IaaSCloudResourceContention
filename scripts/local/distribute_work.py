@@ -34,10 +34,10 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
     exp_id = os.popen('date -u +%s').read()
 
     #@TODO: add phantom flags here?
-    def getPsshcommand(minute, hour, day, HOST_STRING, setid, stopVM, phantomIdle):
+    def getPsshcommand(minute, hour, day, HOST_STRING, setid, stopVM, pIdle):
         return '''
 		set -f
-		psshcommand='set -f && echo "''' + minute + " " + hour + " " + day + ''' * * ubuntu python3  ~/SCRIPT/scripts/remote/run.py -c ''' + cycles+' -t '+benchmark + stopVM + ' -i ' + str(exp_id).strip() + '-' + str(setid) + '-p ' + str(phantomIdle) + ' | logger -t testharness' + '''" >> crontab'
+		psshcommand='set -f && echo "''' + minute + " " + hour + " " + day + ''' * * ubuntu python3  ~/SCRIPT/scripts/remote/run.py -c ''' + cycles+' -t '+benchmark + stopVM + ' -i ' + str(exp_id).strip() + '-' + str(setid) + '-p ' + pIdle + ' | logger -t testharness' + '''" >> crontab'
 		pssh -i -H "''' + HOST_STRING + '''" -x "-o StrictHostKeyChecking=no -i ~/.ssh/as0.pem" $psshcommand
 		'''
 
@@ -85,7 +85,7 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
                     #schedule one VM to stop each time
                     print("stop vm:" + hostlist[i]) 
                     shell = getPsshcommand(str(target_time.minute), str(
-                        target_time.hour), str(target_time.day), hostlist[i], i, " -s", phantomIdle)
+                        target_time.hour), str(target_time.day), hostlist[i], i, " -s", str(phantomIdle))
                     #print(shell)
                     #print(HOST_STRING)
                     tmp = os.popen(shell).read()
@@ -94,7 +94,7 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
 
 #@TODO: whats this do?
         shell = getPsshcommand(str(target_time.minute), str(
-            target_time.hour), str(target_time.day), HOST_STRING, i, "", phantomIdle)
+            target_time.hour), str(target_time.day), HOST_STRING, i, "", str(phantomIdle))
         #print(shell)
         #print(HOST_STRING)
         tmp = os.popen(shell).read()
