@@ -265,8 +265,8 @@ class Experiment(object):
             
             time2 = time.time()
             duration = time2-time1  # unit in seconds
-            
-            if(self.phantomIdle == -1):
+
+            if(self.phantomIdle != -1):
                 myParser = parser(self.benchmark, result, testOption=self.options[self.benchmark],
                                 duration=duration, experimentID=self.experimentID)
                 func = myParser.getfunc()

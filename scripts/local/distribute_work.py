@@ -37,6 +37,7 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
     def getPsshcommand(minute, hour, day, HOST_STRING, setid, stopVM, pIdle=-1):
         result = '' #@TODO: REFACTOR
         if (pIdle >= 0):
+            print('pIdle value: '+str(pIdle))
             result = '''
             set -f
             psshcommand='set -f && echo "''' + minute + " " + hour + " " + day + ''' * * ubuntu python3  ~/SCRIPT/scripts/remote/run.py -c ''' + cycles+' -t '+benchmark + stopVM + ' -i ' + str(exp_id).strip() + '-' + str(setid) + ' -p 10'  + ' | logger -t testharness' + '''" >> crontab'
