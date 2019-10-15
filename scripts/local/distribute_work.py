@@ -34,12 +34,21 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
     exp_id = os.popen('date -u +%s').read()
 
     #@TODO: add phantom flags here?
-    def getPsshcommand(minute, hour, day, HOST_STRING, setid, stopVM, pIdle):
-        return '''
-		set -f
-		psshcommand='set -f && echo "''' + minute + " " + hour + " " + day + ''' * * ubuntu python3  ~/SCRIPT/scripts/remote/run.py -c ''' + cycles+' -t '+benchmark + stopVM + ' -i ' + str(exp_id).strip() + '-' + str(setid) + '-p ' + pIdle + ' | logger -t testharness' + '''" >> crontab'
-		pssh -i -H "''' + HOST_STRING + '''" -x "-o StrictHostKeyChecking=no -i ~/.ssh/as0.pem" $psshcommand
-		'''
+    def getPsshcommand(minute, hour, day, HOST_STRING, setid, stopVM, pIdle=-1):
+        result = '' #@TODO: REFACTOR
+        if (pIdle >= 0):
+            result = '''
+            set -f
+            psshcommand='set -f && echo "''' + minute + " " + hour + " " + day + ''' * * ubuntu python3  ~/SCRIPT/scripts/remote/run.py -c ''' + cycles+' -t '+benchmark + stopVM + ' -i ' + str(exp_id).strip() + '-' + str(setid) + ' -p 10'  + ' | logger -t testharness' + '''" >> crontab'
+            pssh -i -H "''' + HOST_STRING + '''" -x "-o StrictHostKeyChecking=no -i ~/.ssh/as0.pem" $psshcommand
+            '''
+        else:
+            result = '''
+            set -f
+            psshcommand='set -f && echo "''' + minute + " " + hour + " " + day + ''' * * ubuntu python3  ~/SCRIPT/scripts/remote/run.py -c ''' + cycles+' -t '+benchmark + stopVM + ' -i ' + str(exp_id).strip() + '-' + str(setid)  + ' | logger -t testharness' + '''" >> crontab'
+            pssh -i -H "''' + HOST_STRING + '''" -x "-o StrictHostKeyChecking=no -i ~/.ssh/as0.pem" $psshcommand
+            '''
+        return result
 
     def getStopcommand(minute, hour, day, HOST_STRING, setid):
         return '''
@@ -84,8 +93,15 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
                 else:
                     #schedule one VM to stop each time
                     print("stop vm:" + hostlist[i]) 
+                    
                     shell = getPsshcommand(str(target_time.minute), str(
-                        target_time.hour), str(target_time.day), hostlist[i], i, " -s", str(phantomIdle))
+                        target_time.hour), str(target_time.day), hostlist[i], i, " -s")
+
+                    if (i == 0 and phantomIdle >= 0):
+                        #phantom mode
+                        shell = getPsshcommand(str(target_time.minute), str(
+                            target_time.hour), str(target_time.day), hostlist[i], i, " -s", phantomIdle)
+
                     #print(shell)
                     #print(HOST_STRING)
                     tmp = os.popen(shell).read()
@@ -94,7 +110,7 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
 
 #@TODO: whats this do?
         shell = getPsshcommand(str(target_time.minute), str(
-            target_time.hour), str(target_time.day), HOST_STRING, i, "", str(phantomIdle))
+            target_time.hour), str(target_time.day), HOST_STRING, i, "")
         #print(shell)
         #print(HOST_STRING)
         tmp = os.popen(shell).read()
@@ -190,7 +206,7 @@ def main(argv):
         print(notice)
         sys.exit()
     try:
-        opts, args = getopt.getopt(argv, "shrtp:c:n:d:b:g:")
+        opts, args = getopt.getopt(argv, "sphrt:c:n:d:b:g:")
     except getopt.GetoptError:
         print(notice)
         sys.exit(2)
@@ -224,11 +240,11 @@ def main(argv):
             stopFlag = True
 
         elif opt in ("-p"):
-            print('phantom mode active...')
-            if (int(arg) > 60 or int(arg) < 0):
-                print('phantom idle needs to be between 0 and 60 seconds')
-                sys.exit()
-            phantomIdle = arg
+            print(arg + 'phantom mode active...')
+            # if int(arg) not in range(0, 60):
+            #     print('phantom idle needs to be between 0 and 60 seconds')
+            #     sys.exit()
+            phantomIdle = 10 #@TODO:REFACTOR
 
         elif opt in ("-t"):
             minute = arg.strip().split(':')[0]
@@ -256,7 +272,7 @@ def main(argv):
             getPublicIpPool()
             cloneGitRepo()
             pssh_v2(target_time, cycles, iterative_interval,
-                    benchmark, reverseFlag, vmgen, stopFlag, phantomIdle) #@TODO: add phantom flags
+                    benchmark, reverseFlag, vmgen, stopFlag, phantomIdle) 
             sys.exit()
 
     getPublicIpPool()

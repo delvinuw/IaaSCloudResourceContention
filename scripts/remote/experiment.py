@@ -239,11 +239,12 @@ class parser(object):
 
 
 class Experiment(object):
-    def __init__(self, benchmark, cycle, options, experimentID):
+    def __init__(self, benchmark, cycle, options, experimentID, phantomIdle = -1):
         self.benchmark = benchmark
         self.cycle = int(cycle)
         self.options = options
         self.experimentID = experimentID
+        self.phantomIdle = phantomIdle
 
     def run(self):
         for i in range(self.cycle):
