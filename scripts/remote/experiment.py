@@ -254,17 +254,22 @@ class Experiment(object):
             # time stamp that user percieved
             time1 = time.time()
             
+            #@TODO:REFACTOR
             result = ''
             if(phantomIdle != -1): #phantom idle
                 time.sleep(phantomIdle)
+                continue 
             else: #standard case
                 result = os.popen(
                     const.command[self.benchmark]+self.options[self.benchmark]).read()
             
             time2 = time.time()
             duration = time2-time1  # unit in seconds
-            myParser = parser(self.benchmark, result, testOption=self.options[self.benchmark],
-                              duration=duration, experimentID=self.experimentID)
-            func = myParser.getfunc()
-            func()
-            print(result)
+            if(phantomIdle == -1):
+                myParser = parser(self.benchmark, result, testOption=self.options[self.benchmark],
+                                duration=duration, experimentID=self.experimentID)
+                func = myParser.getfunc()
+                func()
+                print(result)
+            else:
+                print(str(duration))
