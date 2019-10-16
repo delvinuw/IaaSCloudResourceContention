@@ -82,34 +82,36 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
         threads.join()
     # -H --host=HOST_STRING
     # No.1 instance has exactly 1 work, No.2 has 2 ... No.16 has 16 newline in crontab
-    skip=0
+    #skip=0
     for i in range(len(hostlist)):
         HOST_STRING = ''
         if reverseFlag == True:
             for host in hostlist[:i+1]:  # reverse 1VM->16VMs
                 HOST_STRING += host+' '
         else:
-            skip=1
-            for host in hostlist[i:]:
-                if skip == 0:
-                    HOST_STRING += host+' '  # positive 16VMs->1VM
-                else:
+            #skip=1
+            for j, host in enumerate(hostlist[i:]):
+                if (j == len(hostlist[i:])-1):
+                    print('last host: ' + hostlist[-1])
+                    #last host in the hostlist, which is the last vm to shutdown
+                    shell = getPsshcommand(str(target_time.minute), str(
+                        target_time.hour), str(target_time.day), hostlist[-1], i, "")
+                    tmp = os.popen(shell).read()
+                    print(tmp)
+                elif (j == 0):
                     #schedule one VM to stop each time
                     print("stop vm:" + hostlist[i]) 
-                    if (i != len(hostlist) - 1 and phantomIdle >= 0):
-                        #phantom mode 
-                        # #@TODO: change benchmark name?
-                        shell = getPsshcommand(str(target_time.minute), str(
-                            target_time.hour), str(target_time.day), hostlist[i], i, " -s", phantomIdle)
-                    else:
-                        shell = getPsshcommand(str(target_time.minute), str(
-                            target_time.hour), str(target_time.day), hostlist[i], i, " -s")
+                    shell = getPsshcommand(str(target_time.minute), str(
+                        target_time.hour), str(target_time.day), hostlist[i], i, " -s", phantomIdle)
                     #print(shell)
                     #print(HOST_STRING)
                     tmp = os.popen(shell).read()
                     print(tmp)
-                    skip=0
+                    #skip=0
+                else:
+                    HOST_STRING += host+' '  # positive 16VMs->1VM
 
+        #run.py on all vms except final host in hostlist and stopped vm
         shell = getPsshcommand(str(target_time.minute), str(
             target_time.hour), str(target_time.day), HOST_STRING, i, "", phantomIdle)
         #print(shell)
@@ -135,7 +137,7 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
 
         # add interval to each line of crontab
         target_time += relativedelta(minutes=interval)
-        skip=skip+1
+        #skip=skip+1
 
     # on each instance, mv ~/crontab to /etc/crontab & change the user to root
     shell = r'''
