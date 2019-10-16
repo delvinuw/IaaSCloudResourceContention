@@ -96,7 +96,7 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
                 else:
                     #schedule one VM to stop each time
                     print("stop vm:" + hostlist[i]) 
-                    if (i != 0 and phantomIdle >= 0):
+                    if (i != 0 and phantomIdle >= 0): #@TODO:maybe we dont need the i !=0 here or any if else
                         #phantom mode 
                         # #@TODO: change benchmark name
                         shell = getPsshcommand(str(target_time.minute), str(
@@ -110,18 +110,15 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
                     print(tmp)
                     skip=0
 
-        #@TODO: whats this do?
+        #@TODO: whats this do? for reverse??
         #####################################################################
-        # if (i != 0 and phantomIdle >= 0):
-        #     shell = getPsshcommand(str(target_time.minute), str(
-        #         target_time.hour), str(target_time.day), HOST_STRING, i, "", phantomIdle)
-        # else:
-        #     shell = getPsshcommand(str(target_time.minute), str(
-        #         target_time.hour), str(target_time.day), HOST_STRING, i, "")
-        # #print(shell)
-        # #print(HOST_STRING)
-        # tmp = os.popen(shell).read()
-        # print(tmp)
+        
+        shell = getPsshcommand(str(target_time.minute), str(
+            target_time.hour), str(target_time.day), HOST_STRING, i, "", phantomIdle)
+        #print(shell)
+        #print(HOST_STRING)
+        tmp = os.popen(shell).read()
+        print(tmp)
         #####################################################################
 
         # Schedule instances to stop
