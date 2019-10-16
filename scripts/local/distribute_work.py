@@ -32,12 +32,14 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
     # copy each 'crontab' to its instance
     os.system('cp crontab.bak crontab')
     exp_id = os.popen('date -u +%s').read()
-
+    #phantomName = 'phantom'
     #@TODO: add phantom flags here?
     def getPsshcommand(minute, hour, day, HOST_STRING, setid, stopVM, pIdle=-1):
         result = '' #@TODO: REFACTOR
+        print('pIdle value: '+str(pIdle))
         if (pIdle >= 0):
-            print('pIdle value: '+str(pIdle))
+            #@TODO:call phantomIdle benchmark here after inplemented change benchmark
+            
             result = '''
             set -f
             psshcommand='set -f && echo "''' + minute + " " + hour + " " + day + ''' * * ubuntu python3  ~/SCRIPT/scripts/remote/run.py -c ''' + cycles+' -t '+benchmark + stopVM + ' -i ' + str(exp_id).strip() + '-' + str(setid) + ' -p 10'  + ' | logger -t testharness' + '''" >> crontab'
@@ -94,28 +96,33 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
                 else:
                     #schedule one VM to stop each time
                     print("stop vm:" + hostlist[i]) 
-                    
-                    shell = getPsshcommand(str(target_time.minute), str(
-                        target_time.hour), str(target_time.day), hostlist[i], i, " -s")
-
                     if (i != 0 and phantomIdle >= 0):
-                        #phantom mode
+                        #phantom mode 
+                        # #@TODO: change benchmark name
                         shell = getPsshcommand(str(target_time.minute), str(
                             target_time.hour), str(target_time.day), hostlist[i], i, " -s", phantomIdle)
-
+                    else:
+                        shell = getPsshcommand(str(target_time.minute), str(
+                            target_time.hour), str(target_time.day), hostlist[i], i, " -s")
                     #print(shell)
                     #print(HOST_STRING)
                     tmp = os.popen(shell).read()
                     print(tmp)
                     skip=0
 
-#@TODO: whats this do?
-        shell = getPsshcommand(str(target_time.minute), str(
-            target_time.hour), str(target_time.day), HOST_STRING, i, "")
-        #print(shell)
-        #print(HOST_STRING)
-        tmp = os.popen(shell).read()
-        print(tmp)
+        #@TODO: whats this do?
+        #####################################################################
+        # if (i != 0 and phantomIdle >= 0):
+        #     shell = getPsshcommand(str(target_time.minute), str(
+        #         target_time.hour), str(target_time.day), HOST_STRING, i, "", phantomIdle)
+        # else:
+        #     shell = getPsshcommand(str(target_time.minute), str(
+        #         target_time.hour), str(target_time.day), HOST_STRING, i, "")
+        # #print(shell)
+        # #print(HOST_STRING)
+        # tmp = os.popen(shell).read()
+        # print(tmp)
+        #####################################################################
 
         # Schedule instances to stop
         #if stopFlag == True:

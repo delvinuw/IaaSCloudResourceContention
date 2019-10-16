@@ -27,6 +27,7 @@ import sys
 sys.modules[__name__] = _const()
 
 # benchmark namespace
+#phantom =sys.modules[__name__].phantom = 'phantom'
 mbw = sys.modules[__name__].mbw = 'mbw'
 bandwidth = sys.modules[__name__].bandwidth = 'bandwidth'
 iperf3 = sys.modules[__name__].iperf3 = 'iperf3'
