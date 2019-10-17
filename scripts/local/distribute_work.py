@@ -36,7 +36,6 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
     #@TODO: add phantom flags here?
     def getPsshcommand(minute, hour, day, HOST_STRING, setid, stopVM, pIdle=-1):
         result = '' #@TODO: REFACTOR
-        print('pIdle value: '+str(pIdle))
         if (pIdle >= 0):
             #@TODO:call phantomIdle benchmark here after inplemented change benchmark
             
@@ -92,7 +91,6 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
             #skip=1
             for j, host in enumerate(hostlist[i:]):
                 if (j == len(hostlist[i:])-1):
-                    print('last host: ' + hostlist[-1])
                     #last host in the hostlist, which is the last vm to shutdown
                     shell = getPsshcommand(str(target_time.minute), str(
                         target_time.hour), str(target_time.day), hostlist[-1], i, "")
