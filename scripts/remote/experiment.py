@@ -257,7 +257,7 @@ class Experiment(object):
             #@TODO:REFACTOR
             result = ''
             if(self.phantomIdle != -1): #phantom idle
-                time.sleep(self.phantomIdle)
+                time.sleep(10)
             else: #standard case
                 
                 result = os.popen(
