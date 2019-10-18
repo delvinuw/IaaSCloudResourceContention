@@ -29,7 +29,7 @@ def main(argv):
 			 -t benchmark')
             sys.exit()
         elif opt in ("-p"):
-            phantomIdle = arg
+            phantomIdle = '10' #@BUG: for some reason when i set this to arg, code breaks..
         elif opt in ("-i"):
             ID = arg
         elif opt in ("-c"):
