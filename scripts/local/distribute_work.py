@@ -97,6 +97,7 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
             for j, host in enumerate(hostlist[i:]):
                 if (j == len(hostlist[i:])-1):
                     #last host in the hostlist, which is the last vm to shutdown
+                    #also the only vm that runs the benchmark, rest idle
                     shell = getPsshcommand(str(target_time.minute), str(
                         target_time.hour), str(target_time.day), hostlist[-1], i, "")
                     tmp = os.popen(shell).read()
