@@ -26,7 +26,7 @@ def pssh(minute='*', hour='*', day='*', cycles='1', benchmark='pgbench'):
     print(respond)
 
 
-def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cycles='10', interval=15, benchmark='pgbench', reverseFlag=False, vmgen='c3', stopFlag=False, phantomIdle=-1):
+def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cycles='10', interval=15, benchmark='pgbench', reverseFlag=False, vmgen='c3', stopFlag=False, phantomIdle=-1, singleRun=False):
     print("in pssh2")
     # override pssh when doing 1to16 dedicated host experiment
     # copy each 'crontab' to its instance
@@ -83,6 +83,7 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
     # No.1 instance has exactly 1 work, No.2 has 2 ... No.16 has 16 newline in crontab
     #skip=0
     for i in range(len(hostlist)):
+        
         HOST_STRING = ''
         if reverseFlag == True:
             for host in hostlist[:i+1]:  # reverse 1VM->16VMs
@@ -197,6 +198,7 @@ def main(argv):
         -s stop instances after test (experimental, use before everything but -b)
     -p : phantom vm mode, starts a single vm with benchmark running, where rest of vms run idle.
          takes rest interval in seconds as arg.  
+    -m : single run mode, runs experiment once, no cascading.
 	-r :dedicated host reverse_mode 1to16 (16to1 by default)
 	-b <choose a benchmark>
 	-t/c <minute:hour:day in UTC>/<minutes count down> 
@@ -208,7 +210,7 @@ def main(argv):
         print(notice)
         sys.exit()
     try:
-        opts, args = getopt.getopt(argv, "shprt:c:n:d:b:g:")
+        opts, args = getopt.getopt(argv, "shpmrt:c:n:d:b:g:")
     except getopt.GetoptError:
         print(notice)
         sys.exit(2)
@@ -222,6 +224,7 @@ def main(argv):
     stopFlag = False
     vmgen = 'c3'
     phantomIdle = -1
+    singleRun = False
     # CLI input handler
     for opt, arg in opts:
         if opt in ("-b"):
@@ -240,6 +243,9 @@ def main(argv):
         elif opt in ("-s"):
             print('stop VM flag has been included...')
             stopFlag = True
+        elif opt in ("-m"):
+            print('single run flag has been included...')
+            singleRun = True
 
         elif opt in ("-p"):
             print('phantom mode active...')
@@ -274,7 +280,7 @@ def main(argv):
             getPublicIpPool()
             cloneGitRepo()
             pssh_v2(target_time, cycles, iterative_interval,
-                    benchmark, reverseFlag, vmgen, stopFlag, phantomIdle) 
+                    benchmark, reverseFlag, vmgen, stopFlag, phantomIdle, singleRun) 
             sys.exit()
 
     getPublicIpPool()
