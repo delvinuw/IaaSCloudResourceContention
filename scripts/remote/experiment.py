@@ -251,10 +251,9 @@ class Experiment(object):
             # flush cache
             os.popen("echo 3 | sudo tee /proc/sys/vm/drop_caches").read()
             print(const.command[self.benchmark]+self.options[self.benchmark])
-            # time stamp that user percieved
+            # time stamp that user percieved(wall time?)
             time1 = time.time()
             
-            #@TODO:REFACTOR
             result = ''
             if(self.phantomIdle >= 0): #phantom idle
                 time.sleep(self.phantomIdle)
@@ -265,7 +264,6 @@ class Experiment(object):
             time2 = time.time()
             duration = time2-time1  # unit in seconds
 
-            
             myParser = parser(self.benchmark, result, testOption=self.options[self.benchmark],
                             duration=duration, experimentID=self.experimentID)
             func = myParser.getfunc()
