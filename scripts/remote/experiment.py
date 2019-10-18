@@ -256,8 +256,8 @@ class Experiment(object):
             
             #@TODO:REFACTOR
             result = ''
-            if(self.phantomIdle != -1): #phantom idle
-                time.sleep(10)
+            if(self.phantomIdle >= 0): #phantom idle
+                time.sleep(self.phantomIdle)
             else: #standard case
                 result = os.popen(
                     const.command[self.benchmark]+self.options[self.benchmark]).read()
