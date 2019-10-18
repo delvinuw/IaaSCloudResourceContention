@@ -34,19 +34,17 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
     exp_id = os.popen('date -u +%s').read()
     #phantomName = 'phantom'
     #@TODO: add phantom flags here?
-    def getPsshcommand(minute, hour, day, HOST_STRING, setid, stopVM):
+    def getPsshcommand(minute, hour, day, HOST_STRING, setid, stopVM, pIdle=-1):
         result = '' #@TODO: REFACTOR
-        print(str(phantomIdle) + ' phantomIdle value..')
-        if (phantomIdle >= 0):
+        if (pIdle >= 0):
             #@TODO:call phantomIdle benchmark here after inplemented change benchmark
             
             result = '''
             set -f
-            psshcommand='set -f && echo "''' + minute + " " + hour + " " + day + ''' * * ubuntu python3  ~/SCRIPT/scripts/remote/run.py -c ''' + cycles+' -t '+benchmark + stopVM + ' -i ' + str(exp_id).strip() + '-' + str(setid) + ' -p ' + str(phantomIdle)  + ' | logger -t testharness' + '''" >> crontab'
+            psshcommand='set -f && echo "''' + minute + " " + hour + " " + day + ''' * * ubuntu python3  ~/SCRIPT/scripts/remote/run.py -c ''' + cycles+' -t '+benchmark + stopVM + ' -i ' + str(exp_id).strip() + '-' + str(setid) + ' -p 10'  + ' | logger -t testharness' + '''" >> crontab'
             pssh -i -H "''' + HOST_STRING + '''" -x "-o StrictHostKeyChecking=no -i ~/.ssh/as0.pem" $psshcommand
             '''
         else:
-            #without -p flag
             result = '''
             set -f
             psshcommand='set -f && echo "''' + minute + " " + hour + " " + day + ''' * * ubuntu python3  ~/SCRIPT/scripts/remote/run.py -c ''' + cycles+' -t '+benchmark + stopVM + ' -i ' + str(exp_id).strip() + '-' + str(setid)  + ' | logger -t testharness' + '''" >> crontab'
@@ -105,7 +103,7 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
                     #schedule one VM to stop each time
                     print("stop vm:" + hostlist[i]) 
                     shell = getPsshcommand(str(target_time.minute), str(
-                        target_time.hour), str(target_time.day), hostlist[i], i, " -s")
+                        target_time.hour), str(target_time.day), hostlist[i], i, " -s", phantomIdle)
                     #print(shell)
                     #print(HOST_STRING)
                     tmp = os.popen(shell).read()
@@ -116,7 +114,7 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
 
         #run.py on all vms except final host in hostlist and stopped vm
         shell = getPsshcommand(str(target_time.minute), str(
-            target_time.hour), str(target_time.day), HOST_STRING, i, "")
+            target_time.hour), str(target_time.day), HOST_STRING, i, "", phantomIdle)
         #print(shell)
         #print(HOST_STRING)
         tmp = os.popen(shell).read()
@@ -256,12 +254,7 @@ def main(argv):
             # if int(arg) not in range(0, 60):
             #     print('phantom idle needs to be between 0 and 60 seconds')
             #     sys.exit()
-            if arg:
-                if arg.strip():
-                    arg = int(arg)
-                phantomIdle = arg
-            else:
-                phantomIdle = 10
+            phantomIdle = 10 #@TODO:REFACTOR
 
         elif opt in ("-t"):
             minute = arg.strip().split(':')[0]
