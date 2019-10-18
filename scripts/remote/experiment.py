@@ -244,7 +244,7 @@ class Experiment(object):
         self.cycle = int(cycle)
         self.options = options
         self.experimentID = experimentID
-        self.phantomIdle = phantomIdle
+        self.phantomIdle = int(phantomIdle)
 
     def run(self):
         for i in range(self.cycle):

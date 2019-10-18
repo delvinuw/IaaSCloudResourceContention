@@ -34,8 +34,9 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
     exp_id = os.popen('date -u +%s').read()
     #phantomName = 'phantom'
     #@TODO: add phantom flags here?
-    def getPsshcommand(minute, hour, day, HOST_STRING, setid, stopVM, pIdle=-1):
+    def getPsshcommand(minute, hour, day, HOST_STRING, setid, stopVM):
         result = '' #@TODO: REFACTOR
+        print(str(phantomIdle) + ' phantomIdle value..')
         if (phantomIdle >= 0):
             #@TODO:call phantomIdle benchmark here after inplemented change benchmark
             
@@ -104,7 +105,7 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
                     #schedule one VM to stop each time
                     print("stop vm:" + hostlist[i]) 
                     shell = getPsshcommand(str(target_time.minute), str(
-                        target_time.hour), str(target_time.day), hostlist[i], i, " -s", phantomIdle)
+                        target_time.hour), str(target_time.day), hostlist[i], i, " -s")
                     #print(shell)
                     #print(HOST_STRING)
                     tmp = os.popen(shell).read()
@@ -115,7 +116,7 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
 
         #run.py on all vms except final host in hostlist and stopped vm
         shell = getPsshcommand(str(target_time.minute), str(
-            target_time.hour), str(target_time.day), HOST_STRING, i, "", phantomIdle)
+            target_time.hour), str(target_time.day), HOST_STRING, i, "")
         #print(shell)
         #print(HOST_STRING)
         tmp = os.popen(shell).read()
@@ -255,7 +256,7 @@ def main(argv):
             # if int(arg) not in range(0, 60):
             #     print('phantom idle needs to be between 0 and 60 seconds')
             #     sys.exit()
-            phantomIdle = 10 #@TODO:REFACTOR
+            phantomIdle = int(arg) #@TODO:REFACTOR
 
         elif opt in ("-t"):
             minute = arg.strip().split(':')[0]
