@@ -16,7 +16,7 @@ def main(argv):
     cycle = '10'
     stopVM = False
     benchmark = const.sysbench
-    phantomIdle = '-1'
+    phantomIdle = -1
     try:
         opts, args = getopt.getopt(argv, "shpc:i:t:")
     except getopt.GetoptError:
@@ -29,7 +29,7 @@ def main(argv):
 			 -t benchmark')
             sys.exit()
         elif opt in ("-p"):
-            phantomIdle = '10' #@BUG: for some reason when i set this to arg, code breaks..
+            phantomIdle = 10 #@BUG:hard coded, arg breaks the code
         elif opt in ("-i"):
             ID = arg
         elif opt in ("-c"):
