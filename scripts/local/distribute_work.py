@@ -36,6 +36,7 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
     #@TODO: add phantom flags here?
     def getPsshcommand(minute, hour, day, HOST_STRING, setid, stopVM, pIdle=-1):
         result = '' #@TODO: REFACTOR
+        print('pIdle: ' + str(pIdle))
         if (pIdle >= 0):
             result = '''
             set -f
