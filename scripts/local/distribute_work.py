@@ -80,7 +80,7 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
         threads.join()
     # -H --host=HOST_STRING
     # No.1 instance has exactly 1 work, No.2 has 2 ... No.16 has 16 newline in crontab
-    #skip=0
+    skip=0
     for i in range(len(hostlist)):
         if (singleRun and i > 0): #only run once for single run mode
             break
@@ -101,17 +101,20 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
                 elif (j == 0 and not singleRun):
                     #schedule one VM to stop each time
                     print("stop vm:" + hostlist[i]) 
-                    shell = getPsshcommand(str(target_time.minute), str(
-                        target_time.hour), str(target_time.day), hostlist[i], i, " -s", phantomIdle)
+                    if (i != len(hostlist) - 1 and phantomIdle >= 0):
+                        #phantom mode 
+                        # #@TODO: change benchmark name?
+                        shell = getPsshcommand(str(target_time.minute), str(
+                            target_time.hour), str(target_time.day), hostlist[i], i, " -s", phantomIdle)
+                    else:
+                        shell = getPsshcommand(str(target_time.minute), str(
+                            target_time.hour), str(target_time.day), hostlist[i], i, " -s")
                     #print(shell)
                     #print(HOST_STRING)
                     tmp = os.popen(shell).read()
                     print(tmp)
-                    #skip=0
-                else:
-                    HOST_STRING += host+' '  # positive 16VMs->1VM
+                    skip=0
 
-        #run.py on all vms except final host in hostlist and stopped vm
         shell = getPsshcommand(str(target_time.minute), str(
             target_time.hour), str(target_time.day), HOST_STRING, i, "", phantomIdle)
         #print(shell)
