@@ -244,7 +244,7 @@ class Experiment(object):
         self.cycle = int(cycle)
         self.options = options
         self.experimentID = experimentID
-        self.phantomIdle = int(phantomIdle)
+        self.phantomIdle = phantomIdle
 
     def run(self):
         for i in range(self.cycle):
@@ -259,6 +259,7 @@ class Experiment(object):
             if(self.phantomIdle != -1): #phantom idle
                 time.sleep(self.phantomIdle)
             else: #standard case
+                
                 result = os.popen(
                     const.command[self.benchmark]+self.options[self.benchmark]).read()
             

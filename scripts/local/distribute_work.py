@@ -256,7 +256,12 @@ def main(argv):
             # if int(arg) not in range(0, 60):
             #     print('phantom idle needs to be between 0 and 60 seconds')
             #     sys.exit()
-            phantomIdle = int(arg) #@TODO:REFACTOR
+            if arg:
+                if arg.strip():
+                    arg = int(arg)
+                phantomIdle = arg
+            else:
+                phantomIdle = 10
 
         elif opt in ("-t"):
             minute = arg.strip().split(':')[0]
