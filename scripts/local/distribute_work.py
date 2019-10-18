@@ -36,15 +36,16 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
     #@TODO: add phantom flags here?
     def getPsshcommand(minute, hour, day, HOST_STRING, setid, stopVM, pIdle=-1):
         result = '' #@TODO: REFACTOR
-        if (pIdle >= 0):
+        if (phantomIdle >= 0):
             #@TODO:call phantomIdle benchmark here after inplemented change benchmark
             
             result = '''
             set -f
-            psshcommand='set -f && echo "''' + minute + " " + hour + " " + day + ''' * * ubuntu python3  ~/SCRIPT/scripts/remote/run.py -c ''' + cycles+' -t '+benchmark + stopVM + ' -i ' + str(exp_id).strip() + '-' + str(setid) + ' -p 10'  + ' | logger -t testharness' + '''" >> crontab'
+            psshcommand='set -f && echo "''' + minute + " " + hour + " " + day + ''' * * ubuntu python3  ~/SCRIPT/scripts/remote/run.py -c ''' + cycles+' -t '+benchmark + stopVM + ' -i ' + str(exp_id).strip() + '-' + str(setid) + ' -p ' + str(phantomIdle)  + ' | logger -t testharness' + '''" >> crontab'
             pssh -i -H "''' + HOST_STRING + '''" -x "-o StrictHostKeyChecking=no -i ~/.ssh/as0.pem" $psshcommand
             '''
         else:
+            #without -p flag
             result = '''
             set -f
             psshcommand='set -f && echo "''' + minute + " " + hour + " " + day + ''' * * ubuntu python3  ~/SCRIPT/scripts/remote/run.py -c ''' + cycles+' -t '+benchmark + stopVM + ' -i ' + str(exp_id).strip() + '-' + str(setid)  + ' | logger -t testharness' + '''" >> crontab'
@@ -83,7 +84,9 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
     # No.1 instance has exactly 1 work, No.2 has 2 ... No.16 has 16 newline in crontab
     #skip=0
     for i in range(len(hostlist)):
-        
+        if (singleRun and i > 0): #only run once for single run mode
+            break
+
         HOST_STRING = ''
         if reverseFlag == True:
             for host in hostlist[:i+1]:  # reverse 1VM->16VMs
@@ -97,7 +100,7 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
                         target_time.hour), str(target_time.day), hostlist[-1], i, "")
                     tmp = os.popen(shell).read()
                     print(tmp)
-                elif (j == 0):
+                elif (j == 0 and not singleRun):
                     #schedule one VM to stop each time
                     print("stop vm:" + hostlist[i]) 
                     shell = getPsshcommand(str(target_time.minute), str(

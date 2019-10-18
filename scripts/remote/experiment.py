@@ -257,12 +257,8 @@ class Experiment(object):
             #@TODO:REFACTOR
             result = ''
             if(self.phantomIdle != -1): #phantom idle
-                #@TODO:add const.command here so stats are added for idle mode
-                #maybe we can call y-cruncher with an empty task? and just get stats back..
-                #change self.option...pass in self.options[phantomIdle] or something
                 time.sleep(self.phantomIdle)
             else: #standard case
-                
                 result = os.popen(
                     const.command[self.benchmark]+self.options[self.benchmark]).read()
             

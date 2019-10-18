@@ -29,7 +29,7 @@ def main(argv):
 			 -t benchmark')
             sys.exit()
         elif opt in ("-p"):
-            phantomIdle = 10 #@TODO:REFACTOR
+            phantomIdle = int(arg) #@TODO:REFACTOR
         elif opt in ("-i"):
             ID = arg
         elif opt in ("-c"):
