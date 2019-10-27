@@ -36,7 +36,6 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
     #@TODO: add phantom flags here?
     def getPsshcommand(minute, hour, day, HOST_STRING, setid, stopVM, pIdle = -1):
         result = '' #@TODO: REFACTOR
-        print(str(pIdle) + ' phantomIdle value..')
         if (pIdle >= 0):
             #@TODO:call phantomIdle benchmark here after inplemented change benchmark
             
@@ -102,7 +101,7 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
                         target_time.hour), str(target_time.day), hostlist[-1], i, "")
                     tmp = os.popen(shell).read()
                     print(tmp)
-                elif (j == 0 and not singleRun):
+                elif (j == 0 and (stopFlag or phantomIdle > -1)):
                     #schedule one VM to stop each time
                     print("stop vm:" + hostlist[i]) 
                     shell = getPsshcommand(str(target_time.minute), str(

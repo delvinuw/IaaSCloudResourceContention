@@ -29,7 +29,7 @@ def main(argv):
 			 -t benchmark')
             sys.exit()
         elif opt in ("-p"):
-            phantomIdle = 15 #@BUG:hard coded, arg breaks the code
+            phantomIdle = 15 #@BUG:hard coded, using arg breaks the code
         elif opt in ("-i"):
             ID = arg
         elif opt in ("-c"):
