@@ -135,6 +135,10 @@ def psshExcute(addrfile, command):
 
 
 def main(argv):
+    print("please use iperf_master_privateip.py.")
+    print("This version routes through the public IP channel on AWS, and will burn your credits! ")
+    sys.exit()
+
     C2S_MAP = createIperfPair()
     launchIperfServer()
     setsTotal = configurIperfClient(C2S_MAP)
