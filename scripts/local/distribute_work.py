@@ -214,7 +214,7 @@ def main(argv):
         print(notice)
         sys.exit()
     try:
-        opts, args = getopt.getopt(argv, "shpmrt:c:n:d:b:g:")
+        opts, args = getopt.getopt(argv, "shp1rt:c:n:d:b:g:")
     except getopt.GetoptError:
         print(notice)
         sys.exit(2)
@@ -247,7 +247,7 @@ def main(argv):
         elif opt in ("-s"):
             print('stop VM flag has been included...')
             stopFlag = True
-        elif opt in ("-m"):
+        elif opt in ("-1"):
             print('single run flag has been included...')
             singleRun = True
 
@@ -256,7 +256,7 @@ def main(argv):
             # if int(arg) not in range(0, 60):
             #     print('phantom idle needs to be between 0 and 60 seconds')
             #     sys.exit()
-            phantomIdle = 10 #@TODO:REFACTOR
+            phantomIdle = int(arg) #@TODO:REFACTOR
 
         elif opt in ("-t"):
             minute = arg.strip().split(':')[0]
