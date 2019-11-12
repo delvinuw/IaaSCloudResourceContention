@@ -18,7 +18,7 @@ def main(argv):
     benchmark = const.sysbench
     phantomIdle = -1
     try:
-        opts, args = getopt.getopt(argv, "shpc:i:t:")
+        opts, args = getopt.getopt(argv, "shp:c:i:t:")
     except getopt.GetoptError:
         print('run.py -c <num of cycles> -i <exp_id> -t <exp_type>')
         sys.exit(2)
@@ -29,7 +29,7 @@ def main(argv):
 			 -t benchmark')
             sys.exit()
         elif opt in ("-p"):
-            phantomIdle = int(arg) #@BUG:hard coded, using arg breaks the code
+            phantomIdle = int(arg)
         elif opt in ("-i"):
             ID = arg
         elif opt in ("-c"):

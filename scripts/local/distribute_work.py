@@ -214,7 +214,7 @@ def main(argv):
         print(notice)
         sys.exit()
     try:
-        opts, args = getopt.getopt(argv, "shp1rt:c:n:d:b:g:")
+        opts, args = getopt.getopt(argv, "shp:1rt:c:n:d:b:g:")
     except getopt.GetoptError:
         print(notice)
         sys.exit(2)
@@ -278,7 +278,7 @@ def main(argv):
             cycles = arg
         elif opt in ('-g'):
             vmgen = arg
-        elif opt in ('-d'): # @TODO: maybe we can create a new loop for this...so it can be out of order 
+        elif opt in ('-d'): 
             # dedicated host mode
             iterative_interval = int(arg)
             getPublicIpPool()
