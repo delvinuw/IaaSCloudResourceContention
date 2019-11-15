@@ -6,13 +6,13 @@ then
   sudo service postgresql stop
   sleep 1
   echo "m5d instance: partitioning and formatting ephemeral NVMe SSD before test..."
-  sudo parted /dev/nvme1n1 mklabel msdos
+  sudo parted /dev/nvme0n1 mklabel msdos
   sleep .5
   sudo parted -a optimal /dev/nvmeOn1 mkpart primary ext4 0%  69.9GB
   sleep 1
-  sudo mkfs.ext4 /dev/nvmeOn1p1
+  sudo mkfs.ext4 /dev/nvme0n1p1
   sleep 1
-  sudo mount /dev/nvmeOn1p1 /mnt -t ext4
+  sudo mount /dev/nvme0n1p1 /mnt -t ext4
   sleep 1
   #copy the database files to the new data disk, leave local copy 
   echo "m5d instance: moving postgresql to the ephemeral drive before test..."
