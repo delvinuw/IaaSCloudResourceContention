@@ -8,7 +8,7 @@ then
   echo "m5d instance: partitioning and formatting ephemeral NVMe SSD before test..."
   sudo parted /dev/nvme0n1 mklabel msdos
   sleep .5
-  sudo parted -a optimal /dev/nvmeOn1 mkpart primary ext4 0%  69.9GB
+  sudo parted -a optimal /dev/nvme0n1 mkpart primary ext4 0%  69.9GB
   sleep 1
   sudo mkfs.ext4 /dev/nvme0n1p1
   sleep 1
