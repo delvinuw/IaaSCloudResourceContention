@@ -62,7 +62,7 @@ y_cruncherm5d_option = sys.modules[__name__].y_cruncherm5d_option = 'EOF\n0\n0\n
 #y_cruncher_option = sys.modules[__name__].y_cruncher_option = 'EOF\n0\n1\n1\nEOF\n'
 # running options of pgbench # need 61s on c4.large
 dic[pgbench] = 'pgbench'
-pgbench_option = sys.modules[__name__].pgbench_option = ' --client=10 --jobs=10 --time=60  ubuntu'
+pgbench_option = sys.modules[__name__].pgbench_option = ' -n --client=10 --jobs=10 --time=60  ubuntu'
 # running options of sysbench # 8.480s on c4.large
 # sysbench do not need <cycle> option, already has built-in mechanism to calculate avg
 dic[sysbench] = 'sysbench'
