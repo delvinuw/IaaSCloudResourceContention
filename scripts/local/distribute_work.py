@@ -37,7 +37,7 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
     def getPsshcommand(minute, hour, day, HOST_STRING, setid, stopVM, pIdle = -1):
         result = '' #@TODO: REFACTOR
         if (pIdle >= 0):
-            #@TODO:call phantomIdle benchmark here after inplemented change benchmark
+            #@TODO:refactor..
             
             result = '''
             set -f
@@ -46,6 +46,7 @@ def pssh_v2(target_time=datetime.datetime.utcnow()+relativedelta(minutes=5), cyc
             '''
         else:
             #without -p flag
+            #@TODO: given the code in run.py and experiment.py, we can refactor and pass -p = -1...test later
             result = '''
             set -f
             psshcommand='set -f && echo "''' + minute + " " + hour + " " + day + ''' * * ubuntu python3  ~/SCRIPT/scripts/remote/run.py -c ''' + cycles+' -t '+benchmark + stopVM + ' -i ' + str(exp_id).strip() + '-' + str(setid)  + ' | logger -t testharness' + '''" >> crontab'
