@@ -201,9 +201,9 @@ def main(argv):
     notice = '''#distribute_work.py# 
 	-h : help
         -s stop instances after test (experimental, use before everything but -b)
-    -p : phantom vm mode, starts a single vm with benchmark running, where rest of vms run idle.
+    -p : <idle interval> phantom vm mode, starts a single vm with benchmark running, where rest of vms run idle.
          takes rest interval in seconds as arg.  
-    -m : single run mode, runs experiment once, no cascading.
+    -1 : single run mode, runs experiment once, no cascading.
 	-r :dedicated host reverse_mode 1to16 (16to1 by default)
 	-b <choose a benchmark>
 	-t/c <minute:hour:day in UTC>/<minutes count down> 
@@ -254,10 +254,11 @@ def main(argv):
 
         elif opt in ("-p"):
             print('phantom mode active...')
+            #@TODO:
             # if int(arg) not in range(0, 60):
             #     print('phantom idle needs to be between 0 and 60 seconds')
             #     sys.exit()
-            phantomIdle = int(arg) #@TODO:REFACTOR
+            phantomIdle = int(arg) 
 
         elif opt in ("-t"):
             minute = arg.strip().split(':')[0]
