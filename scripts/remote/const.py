@@ -68,10 +68,10 @@ pgbench_option = sys.modules[__name__].pgbench_option = ' --client=10 --jobs=10 
 dic[sysbench] = 'sysbench'
 
 #original
-#sysbench_option = sys.modules[__name__].sysbench_option = ' --test=cpu --cpu-max-prime=2000000 --num-threads=2 --max-requests=10 run'
+sysbench_option = sys.modules[__name__].sysbench_option = ' --test=cpu --cpu-max-prime=2000000 --num-threads=2 --max-requests=10 run'
 
 #testing memory contention for c3
-sysbench_option = sys.modules[__name__].sysbench_option = ' --num-threads=2 --test=memory --memory-block-size=3000M --memory-total-size=100G run'
+#sysbench_option = sys.modules[__name__].sysbench_option = ' --num-threads=2 --test=memory --memory-block-size=3000M --memory-total-size=100G run'
 
 # sysbench --test=memory --memory-block-size=1K --num-threads=2 --memory-total-size=10G run
 dic[sysbench_ram] = 'sysbench'
